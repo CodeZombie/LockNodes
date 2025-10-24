@@ -1,0 +1,2 @@
+# LockNodes
+ComfyUI Lock Nodes
