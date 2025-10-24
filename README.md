@@ -1,5 +1,5 @@
-# LockNodes
-LockNodes give you the ability to prevent ComfyUI from executing already-evaluated portions of your workflow by "locking" images in place and recalling them when needed, even across server restarts.
+# 🔒 LockNodes
+LockNodes give you the ability to prevent ComfyUI from executing already-evaluated portions of your workflow by "locking" images and masks in place and preventing execution of any previous nodes, even across server restarts.
 
 ## What is this?
 Running an entire multi-step ComfyUI workflow is slow. 
@@ -23,7 +23,8 @@ This gives you total control over which parts of your workflow get executed, and
 
 Let's consider this simple example:
 
-![A normal ComfyUI workflow split into two sections: Generate Base Image and Post-Process. The Generate Base Image section generates an image, and sends that image to Post-Process, which takes in one image and performs a Blur operation.](unmodified_workflow.png)
+<img width="2725" height="1172" alt="image-2" alt="A normal ComfyUI workflow split into two sections: Generate Base Image and Post-Process. The Generate Base Image section generates an image, and sends that image to Post-Process, which takes in one image and performs a Blur operation." src="https://github.com/user-attachments/assets/4e04d21e-cc8c-4cdb-a329-0d10122d5cd5" />
+
 Our workflow is split into at two sections: `Generate base image` and `post process`.
 
 However, we've noticed that while building up the rest of the workflow, sometimes ComfyUI will re-run `Generate Base Image`, even if none of it's nodes have changed. Or perhaps this workflow is taking multiple days to build, and we've needed to restart the ComfyUI server many times. Every time this happens, we have to wait for ComfyUI to re-evaluate `Generate Base Image` again. Not good!
@@ -31,12 +32,14 @@ However, we've noticed that while building up the rest of the workflow, sometime
 Instead, we'd like to set this workflow up such that after we've evaluated "Generate Base Image" once and we're happy with it, we can force ComfyUI to _never_ evaluate it again unless we explicitly want it to.
 
 To do this, we place two new nodes between the sections of our workflow: `Toggle` and `Lock Image`:
-![The same workflow again, but with two new nodes in sequence, separating the two sections: Toggle and Lock Image.](workflow_with_locknodes.png)
+
+<img width="2938" height="1062" alt="image-3" alt="The same workflow again, but with two new nodes in sequence, separating the two sections: Toggle and Lock Image." src="https://github.com/user-attachments/assets/b27c2879-f9b9-4e9c-9c9a-6053c2137389" />
 
 Now we run the workflow again to permanently store the image from `Generate Base Image` in the `Lock Image` node, keeping it saved for future use.
 
 Next, we bypass the `Toggle` node. 
-![The workflow again, but now with the Toggle node bypassed](workflow_with_locknodes_and_toggle_bypassed.png)
+
+<img width="2938" height="1062" alt="image-4" alt="The workflow again, but now with the Toggle node bypassed." src="https://github.com/user-attachments/assets/2c27b189-0133-42eb-8ec2-14ac88f976d3" />
 
 This will trick comfyUI into pretending all the nodes before it don't exist, and as a result, they will never run again, even across server restarts. That section of the workflow is effectively disabled.
 
