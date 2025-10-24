@@ -18,7 +18,6 @@ LockNodes allow you to store 'checkpoints' of an Image or Mask anywhere in your 
 
 This gives you total control over which parts of your workflow get executed, and when.
 
-
 ## How do I use it?
 
 Let's consider this simple example:
@@ -44,6 +43,8 @@ Next, we bypass the `Toggle` node.
 This will trick comfyUI into pretending all the nodes before it don't exist, and as a result, they will never run again, even across server restarts. That section of the workflow is effectively disabled.
 
 To re-run that section again, we simply un-bypass the `Toggle` node and everything returns to normal.
+
+*Note*: This does not actaully disable any nodes, it simply tells ComfyUI to not automatically mark the previous nodes for evaluation. These node may still execute if another node in a different branch request it.
 
 ## How does this work?
 The technical theory behind this is fairly straightforward.
