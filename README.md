@@ -50,7 +50,7 @@ There are several other ways around this:
 3. Move Preview/Save nodes after the Lock Nodes
 4. Place Preview/Save nodes after their own Lock Nodes.
 
-This will prevent the `Image Blur` node as being marking as dependant on the previous nodes and, as a result, they will not run run. The image will be retrieved from the `Lock Image` node instead.
+This will tell ComfyUI that the `Image Blur` node is independant from all the nodes before `Lock Image` and, as a result, those nodes will not run. The image will be retrieved from the `Lock Image` node instead and begin execution from there.
 
 To re-run the `Generate Base Image` section again, we simply un-bypass the `Toggle` node and everything returns to normal.
 
