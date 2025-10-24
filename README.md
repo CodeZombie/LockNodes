@@ -28,7 +28,7 @@ Our workflow is split into at two sections: `Generate base image` and `post proc
 
 However, we've noticed that while building up the rest of the workflow, sometimes ComfyUI will re-run `Generate Base Image`, even if none of it's nodes have changed. Or perhaps this workflow is taking multiple days to build, and we've needed to restart the ComfyUI server many times. Every time this happens, we have to wait for ComfyUI to re-evaluate `Generate Base Image` again. Not good!
 
-Instead, we'd like to set this workflow up such that after we've evaluated "Generate Base Image" once and we're happy with it, we can force ComfyUI to _never_ evaluate it again unless we explicitly want it to.
+Instead, we'd like to set this workflow up such that after we've evaluated "Generate Base Image" once and we're happy with it, we can force ComfyUI to not evaluate it again unless we explicitly want it to.
 
 To do this, we place two new nodes between the sections of our workflow: `Toggle` and `Lock Image`:
 
@@ -36,15 +36,23 @@ To do this, we place two new nodes between the sections of our workflow: `Toggle
 
 Now we run the workflow again to permanently store the image from `Generate Base Image` in the `Lock Image` node, keeping it saved for future use.
 
-Next, we bypass the `Toggle` node. 
+Next, we bypass the `Toggle` node.
 
-<img width="2938" height="1062" alt="image-4" alt="The workflow again, but now with the Toggle node bypassed." src="https://github.com/user-attachments/assets/2c27b189-0133-42eb-8ec2-14ac88f976d3" />
+<img width="2938" height="1062" alt="image-4" alt="The workflow again, but now with the Toggle node bypassed." src="https://github.com/user-attachments/assets/7c9875d3-b22e-42fb-9c99-513010664820" />
 
-This will trick comfyUI into pretending all the nodes before it don't exist, and as a result, they will never run again, even across server restarts. That section of the workflow is effectively disabled.
+*NOTE*: 
+In this case, we also need to bypass the `Generate Base Image`'s `Preview` node, as Preview and Save nodes will independantly cause `KSampler #162` to re-run when we re-run the entire workflow.
 
-To re-run that section again, we simply un-bypass the `Toggle` node and everything returns to normal.
+There are several other ways around this:
+1. Directly execute nodes instead of running the entire workflow, which attempts to evaluate everything leading to a Preview/Save node.
+1. Bypass Preview/Save nodes.
+2. Delete Preview/Save nodes
+3. Move Preview/Save nodes after the Lock Nodes
+4. Place Preview/Save nodes after their own Lock Nodes.
 
-*Note*: This does not actaully disable any nodes, it simply tells ComfyUI to not automatically mark the previous nodes for evaluation. These node may still execute if another node in a different branch request it.
+This will prevent the `Image Blur` node as being marking as dependant on the previous nodes and, as a result, they will not run run. The image will be retrieved from the `Lock Image` node instead.
+
+To re-run the `Generate Base Image` section again, we simply un-bypass the `Toggle` node and everything returns to normal.
 
 ## How does this work?
 The technical theory behind this is fairly straightforward.
